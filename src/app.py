@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, send_file, flash, redirect, url_for, session
 import os
+import shutil
 import pandas as pd
 
 from utils import (
@@ -24,12 +25,22 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
 
+def limpiar_carpetas():
+    """Elimina todos los archivos de las carpetas uploads y outputs"""
+    for carpeta in [UPLOAD_FOLDER, OUTPUT_FOLDER]:
+        if os.path.exists(carpeta):
+            for archivo in os.listdir(carpeta):
+                ruta_archivo = os.path.join(carpeta, archivo)
+                try:
+                    if os.path.isfile(ruta_archivo):
+                        os.remove(ruta_archivo)
+                except Exception as e:
+                    print(f"Error al eliminar {ruta_archivo}: {e}")
 
 @app.route('/')
 def index():
     session.clear()
     return render_template('index.html')
-
 
 @app.route('/vista_previa', methods=['POST'])
 def vista_previa():
@@ -65,7 +76,6 @@ def vista_previa():
         traceback.print_exc()
         return {'success': False, 'error': str(e)}
 
-
 @app.route('/convertir', methods=['POST'])
 def convertir():
     try:
@@ -80,7 +90,6 @@ def convertir():
             session.clear()
             return redirect(url_for('index'))
         
-        # Obtener datos del formulario
         mapeo = {
             'campo_nombre': request.form.get('nombre_columna'),
             'campo_importe_neto': request.form.get('importe_columna'),
@@ -97,7 +106,6 @@ def convertir():
         filas_eliminar_str = request.form.get('filas_eliminadas', '')
         filas_eliminar = [int(x) for x in filas_eliminar_str.split(',') if x.strip().isdigit()]
         
-        # Validaciones
         if not all(mapeo.values()):
             flash('Selecciona las columnas requeridas (Nombre, Importe y Cuenta)', 'error')
             return redirect(url_for('index'))
@@ -110,20 +118,14 @@ def convertir():
             flash('La fecha debe tener 8 dígitos (DDMMYYYY)', 'error')
             return redirect(url_for('index'))
         
-        # Cargar DataFrame
         df, _, _ = procesar_excel(filepath)
-        
-        # Generar CSV con formato bancario
         df_final, total = generar_csv_bancario(df, mapeo, adicionales, filas_eliminar)
-        
-        # Guardar como CSV
         nombre_csv, output_path = guardar_dataframe_como_csv(df_final, OUTPUT_FOLDER)
         
-        # Limpiar temporales
         limpiar_archivos_temporales(filepath)
         session.clear()
         
-        flash(f'{len(df_final)-1} registros | Total: ${total}', 'success')
+        flash(f'{len(df_final)-1} registros', 'success')
         return render_template('index.html', csv_download=nombre_csv)
     
     except Exception as e:
@@ -132,22 +134,29 @@ def convertir():
         flash(f'Error: {str(e)}', 'error')
         return redirect(url_for('index'))
 
-
 @app.route('/descargar/<filename>')
 def descargar(filename):
     filepath = os.path.join(OUTPUT_FOLDER, filename)
     if not os.path.exists(filepath):
         flash('Archivo no disponible', 'error')
-        return redirect(url_for('index'))
+        return redirect(url_for('nueva_conversion'))
     return send_file(filepath, as_attachment=True, download_name=filename)
 
-
-# CORREGIDO: Cambiado de '/nueva' a '/nueva_conversion' para que coincida con el HTML
 @app.route('/nueva_conversion')
 def nueva_conversion():
+    limpiar_carpetas()
     session.clear()
     return redirect(url_for('index'))
 
+@app.before_request
+def verificar_sesion():
+    """Verifica que el archivo en sesión aún exista"""
+    if 'archivo_actual' in session:
+        filepath = os.path.join(UPLOAD_FOLDER, session['archivo_actual'])
+        if not os.path.exists(filepath):
+            session.clear()
+            flash('La sesión ha expirado o el archivo ya no existe', 'error')
+            return redirect(url_for('nueva_conversion'))
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
