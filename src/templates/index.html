@@ -326,6 +326,12 @@
                 filasEliminar = new Set();
                 archivoCargado = true;
                 
+                // Resetear el input de eliminadas
+                const inputEliminadas = document.querySelector('input[name="filas_eliminadas"]');
+                if (inputEliminadas) {
+                    inputEliminadas.value = '';
+                }
+                
                 // Resetear mapeo
                 mapeoSeleccionado = {
                     nombre: null,
@@ -348,6 +354,15 @@
             loader.classList.add('hidden');
         }
     });
+
+    function estaEliminado(indiceReal) {
+        const inputEliminadas = document.querySelector('input[name="filas_eliminadas"]');
+        if (inputEliminadas && inputEliminadas.value) {
+            const eliminados = inputEliminadas.value.split(',').map(Number);
+            return eliminados.includes(indiceReal);
+        }
+        return filasEliminar.has(indiceReal);
+    }
 
     // Renderizar tabla con selects de mapeo
     function renderizarTabla() {
@@ -397,14 +412,14 @@
         datosGlobales.forEach((fila, idx) => {
             const indiceReal = fila.__indice_real__;
             bodyHTML += `
-                <tr class="${filasEliminar.has(indiceReal) ? 'bg-red-50' : (idx % 2 === 0 ? 'bg-white' : 'bg-gray-50')} hover:bg-gray-100">
+                <tr class="${estaEliminado(indiceReal) ? 'bg-red-50' : (idx % 2 === 0 ? 'bg-white' : 'bg-gray-50')} hover:bg-gray-100">
                     <td class="px-3 py-2">
-                        <input type="checkbox" name="filas_eliminar" value="${indiceReal}" 
+                        <input type="checkbox" name="filas_eliminar_temp" value="${indiceReal}" 
                                class="w-4 h-4 text-red-600 border-gray-300 rounded cursor-pointer"
-                               ${filasEliminar.has(indiceReal) ? 'checked' : ''}
+                               ${estaEliminado(indiceReal) ? 'checked' : ''}
                                onchange="toggleFila(${indiceReal})">
                     </td>
-                    <td class="px-3 py-2 text-gray-500 text-xs">${indiceReal + 1}</td>
+                    <td class="px-3 py-2 text-gray-500 text-xs">${idx + 1}</td>
             `;
             
             columnasGlobales.forEach(col => {
@@ -440,15 +455,7 @@
             }
             
             // Limpiar la asignación anterior de este tipo
-            const columnaAnterior = mapeoSeleccionado[nuevoTipo];
             mapeoSeleccionado[nuevoTipo] = null;
-            
-            // Limpiar también cualquier otro tipo que tuviera esta columna
-            for (let tipo in mapeoSeleccionado) {
-                if (mapeoSeleccionado[tipo] === columna) {
-                    mapeoSeleccionado[tipo] = null;
-                }
-            }
         }
         
         // Limpiar cualquier otro tipo que tuviera esta columna
@@ -507,44 +514,87 @@
         }
     }
 
-    // Toggle fila para eliminar
     function toggleFila(indiceReal) {
         if (filasEliminar.has(indiceReal)) {
             filasEliminar.delete(indiceReal);
         } else {
             filasEliminar.add(indiceReal);
         }
+        
         actualizarContadores();
         actualizarVisibilidadBotonEliminar();
     }
 
-    // Eliminar filas seleccionadas (CORREGIDO)
     function eliminarFilasSeleccionadas() {
-    if (filasEliminar.size === 0) {
-        alert('No hay filas seleccionadas para eliminar');
-        return;
+        if (filasEliminar.size === 0) {
+            alert('No hay filas seleccionadas para eliminar');
+            return;
+        }
+        
+        if (confirm(`¿Eliminar ${filasEliminar.size} filas seleccionadas?`)) {
+            // Guardar los índices a eliminar en esta iteración
+            const indicesActuales = Array.from(filasEliminar);
+            
+            // Obtener índices previamente eliminados
+            let indicesPrevios = [];
+            const inputEliminadas = document.querySelector('input[name="filas_eliminadas"]');
+            if (inputEliminadas && inputEliminadas.value) {
+                indicesPrevios = inputEliminadas.value.split(',').map(Number).filter(n => !isNaN(n));
+            }
+            
+            // Combinar índices previos con los nuevos (eliminar duplicados)
+            const todosIndices = [...new Set([...indicesPrevios, ...indicesActuales])];
+            
+            // Filtrar los datos globales (solo para la vista previa)
+            datosGlobales = datosGlobales.filter(fila => !indicesActuales.includes(fila.__indice_real__));
+            
+            // Limpiar el set de seleccionados
+            filasEliminar.clear();
+            
+            // Actualizar/crear input hidden con TODOS los índices eliminados
+            if (!inputEliminadas) {
+                const nuevoInput = document.createElement('input');
+                nuevoInput.type = 'hidden';
+                nuevoInput.name = 'filas_eliminadas';
+                document.getElementById('formConvertir').appendChild(nuevoInput);
+                nuevoInput.value = todosIndices.join(',');
+            } else {
+                inputEliminadas.value = todosIndices.join(',');
+            }
+            
+            console.log('Índices eliminados acumulados:', todosIndices); // Para debugging
+            
+            renderizarTabla();
+            actualizarContadores();
+            actualizarVisibilidadBotonEliminar();
+            
+            alert(`Se eliminaron ${indicesActuales.length} filas (Total eliminadas: ${todosIndices.length})`);
+        }
     }
-    
-    if (confirm(`¿Eliminar ${filasEliminar.size} filas seleccionadas?`)) {
-        // Los índices que se mandan al servidor son los que están en filasEliminar
-        // Estos índices corresponden al DataFrame original, así que están correctos
-        // Solo necesitamos limpiar la vista local
-        datosGlobales = datosGlobales.filter(fila => !filasEliminar.has(fila.__indice_real__));
-        filasEliminar = new Set();  // ← Esto es clave
-        renderizarTabla();
-        actualizarContadores();
-    }
-}
 
-    // Actualizar contadores
     function actualizarContadores() {
-        document.getElementById('countEliminar').textContent = filasEliminar.size;
-        document.getElementById('countExportar').textContent = datosGlobales.length - filasEliminar.size;
+        const inputEliminadas = document.querySelector('input[name="filas_eliminadas"]');
+        let totalEliminados = 0;
+        
+        if (inputEliminadas && inputEliminadas.value) {
+            totalEliminados = inputEliminadas.value.split(',').filter(s => s.trim() !== '').length;
+        }
+        
+        // Los que están seleccionados ahora (pendientes de eliminar)
+        const seleccionadosAhora = filasEliminar.size;
+        
+        // Total a eliminar = los ya eliminados + los seleccionados ahora
+        document.getElementById('countEliminar').textContent = totalEliminados + seleccionadosAhora;
+        
+        // Filas visibles actualmente en datosGlobales
+        document.getElementById('countExportar').textContent = datosGlobales.length - seleccionadosAhora;
+        
+        // Actualizar totalFilas (opcional, mantener consistencia)
+        document.getElementById('totalFilas').textContent = datosGlobales.length;
     }
 
     // Actualizar visibilidad del botón eliminar
     function actualizarVisibilidadBotonEliminar() {
-        const btnEliminar = document.getElementById('btnEliminar');
         if (btnEliminar) {
             if (filasEliminar.size === 0) {
                 btnEliminar.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
@@ -561,13 +611,6 @@
         if (!archivoCargado) {
             e.preventDefault();
             alert('Primero carga un archivo Excel');
-            return;
-        }
-        
-        // NUEVA VALIDACIÓN: No permitir enviar si hay filas seleccionadas para eliminar
-        if (filasEliminar.size > 0) {
-            e.preventDefault();
-            alert('Hay filas seleccionadas para eliminar. Debes eliminarlas o deseleccionarlas antes de continuar.');
             return;
         }
         

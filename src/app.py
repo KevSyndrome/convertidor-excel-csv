@@ -94,7 +94,8 @@ def convertir():
             'columna8_texto': request.form.get('col8_texto', '')
         }
         
-        filas_eliminar = [int(f) for f in request.form.getlist('filas_eliminar') if f.isdigit()]
+        filas_eliminar_str = request.form.get('filas_eliminadas', '')
+        filas_eliminar = [int(x) for x in filas_eliminar_str.split(',') if x.strip().isdigit()]
         
         # Validaciones
         if not all(mapeo.values()):
