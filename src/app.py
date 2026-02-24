@@ -123,7 +123,7 @@ def convertir():
         limpiar_archivos_temporales(filepath)
         session.clear()
         
-        flash(f'✅ {len(df_final)-1} registros | Total: ${total}', 'success')
+        flash(f'{len(df_final)-1} registros | Total: ${total}', 'success')
         return render_template('index.html', csv_download=nombre_csv)
     
     except Exception as e:
