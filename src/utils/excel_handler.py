@@ -67,32 +67,3 @@ def obtener_vista_previa(df, limite=100):
     
     return datos
 
-
-def filtrar_dataframe(df, columnas_seleccionadas, filas_eliminar):
-    """
-    Filtra un DataFrame según columnas seleccionadas y filas a eliminar
-    """
-    if not columnas_seleccionadas:
-        columnas_seleccionadas = df.columns.tolist()
-    
-    columnas_validas = [col for col in columnas_seleccionadas if col in df.columns]
-    
-    if not columnas_validas:
-        return None
-    
-    df_filtrado = df[columnas_validas].copy()
-    
-    if filas_eliminar:
-        indices_eliminar = []
-        for idx in filas_eliminar:
-            try:
-                indices_eliminar.append(int(idx))
-            except:
-                pass
-        
-        if indices_eliminar:
-            indices_validos = [i for i in indices_eliminar if i < len(df_filtrado)]
-            df_filtrado = df_filtrado.drop(indices_validos)
-            df_filtrado = df_filtrado.reset_index(drop=True)
-    
-    return df_filtrado

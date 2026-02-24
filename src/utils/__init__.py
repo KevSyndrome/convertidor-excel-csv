@@ -1,3 +1,4 @@
+# src/utils/__init__.py
 from .limpieza import (
     eliminar_acentos,
     reemplazar_caracteres_especiales,
@@ -13,7 +14,6 @@ from .excel_handler import (
     limpiar_columnas_dataframe,
     procesar_excel,
     obtener_vista_previa,
-    filtrar_dataframe
 )
 
 from .file_manager import (
@@ -23,6 +23,13 @@ from .file_manager import (
     guardar_dataframe_como_csv,
     limpiar_archivos_temporales,
     asegurar_directorios
+)
+
+from .formato_bancario import (
+    formatear_nombre,
+    formatear_importe,
+    formatear_cuenta,
+    generar_csv_bancario
 )
 
 __all__ = [
@@ -48,5 +55,11 @@ __all__ = [
     'guardar_archivo',
     'guardar_dataframe_como_csv',
     'limpiar_archivos_temporales',
-    'asegurar_directorios'
+    'asegurar_directorios',
+    
+    # Formato Bancario
+    'formatear_nombre',
+    'formatear_importe',
+    'formatear_cuenta',
+    'generar_csv_bancario'
 ]

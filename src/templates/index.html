@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conversor Excel a CSV</title>
+    <title>Conversor Excel a CSV - Formato Bancario</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -11,16 +11,9 @@
                 extend: {
                     colors: {
                         primary: {
-                            50: '#eef2ff',
-                            100: '#e0e7ff',
-                            200: '#c7d2fe',
-                            300: '#a5b4fc',
-                            400: '#818cf8',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                            800: '#3730a3',
-                            900: '#312e81',
+                            50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe',
+                            300: '#a5b4fc', 400: '#818cf8', 500: '#6366f1',
+                            600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81',
                         }
                     }
                 }
@@ -44,19 +37,20 @@
         <div class="text-center mb-8 pt-8">
             <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur rounded-full mb-4">
                 <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
             </div>
             <h1 class="text-4xl font-bold text-white mb-2">Conversor Excel a CSV</h1>
-            <p class="text-white/80 text-lg">Sube, visualiza, selecciona y convierte</p>
+            <p class="text-white/80 text-lg">Formato bancario</p>
         </div>
         
-        <!-- Mensajes de alerta mejorados -->
-        <div id="flash-messages" class="max-w-4xl mx-auto mb-6">
+        <!-- Mensajes de alerta -->
+        <div class="max-w-4xl mx-auto mb-6">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
-                        <div class="p-4 rounded-xl {% if category == 'success' %}bg-green-100 border border-green-300 text-green-800{% else %}bg-red-100 border border-red-300 text-red-800{% endif %} animate-fade-in mb-3 flash-message">
+                        <div class="p-4 rounded-xl {% if category == 'success' %}bg-green-100 border border-green-300 text-green-800{% else %}bg-red-100 border border-red-300 text-red-800{% endif %} animate-fade-in mb-3">
                             <div class="flex items-center">
                                 {% if category == 'success' %}
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,87 +74,120 @@
             {% endwith %}
         </div>
         
-        <!-- Notificaciones JS -->
-        <div id="notification-area" class="max-w-4xl mx-auto mb-6 hidden"></div>
-        
-        <!-- Formulario -->
-        <form action="/convertir" method="POST" enctype="multipart/form-data" id="convertForm">
-            
-            <!-- Sección 1: Subir archivo -->
-            <div class="max-w-2xl mx-auto mb-8">
-                <div class="bg-white rounded-2xl shadow-2xl p-8">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                        <span class="bg-primary-100 text-primary-600 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">1</span>
-                        Subir archivo Excel
-                    </h2>
-                    
-                    <input type="file" name="archivo" id="archivo" accept=".xlsx,.xls" class="hidden" required>
-                    
-                    <div class="border-2 border-dashed border-primary-300 rounded-xl p-8 text-center cursor-pointer hover:border-primary-500 hover:bg-primary-50 transition-all-300" onclick="document.getElementById('archivo').click()" id="uploadArea">
-                        <div class="flex flex-col items-center">
-                            <svg class="w-16 h-16 text-primary-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                            </svg>
-                            <p class="text-gray-600 font-medium text-lg" id="uploadText">Haz clic para seleccionar tu archivo</p>
-                            <p class="text-gray-400 mt-2">Archivos .xlsx o .xls</p>
+        <!-- Formulario (se oculta cuando hay descarga) -->
+        <div id="formConvertirContainer">
+            <form action="/convertir" method="POST" enctype="multipart/form-data" id="formConvertir">
+                
+                <!-- Sección 1: Subir archivo -->
+                <div class="max-w-2xl mx-auto mb-8">
+                    <div class="bg-white rounded-2xl shadow-2xl p-8">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                            <span class="bg-primary-100 text-primary-600 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">1</span>
+                            Subir archivo Excel
+                        </h2>
+                        
+                        <input type="file" name="archivo" id="archivo" accept=".xlsx,.xls" class="hidden" required>
+                        
+                        <div class="border-2 border-dashed border-primary-300 rounded-xl p-8 text-center cursor-pointer hover:border-primary-500 hover:bg-primary-50 transition-all-300" 
+                             onclick="document.getElementById('archivo').click()" id="uploadArea">
+                            <div class="flex flex-col items-center">
+                                <svg class="w-16 h-16 text-primary-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <p class="text-gray-600 font-medium text-lg" id="uploadText">Haz clic para seleccionar tu archivo</p>
+                                <p class="text-gray-400 mt-2">Archivos .xlsx o .xls</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div id="loader" class="hidden text-center py-6">
-                        <div class="inline-flex items-center px-4 py-2 bg-primary-50 rounded-lg">
-                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-600" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            <span class="text-primary-700 font-medium">Cargando vista previa...</span>
+                        
+                        <div id="loader" class="hidden text-center py-6">
+                            <div class="inline-flex items-center px-4 py-2 bg-primary-50 rounded-lg">
+                                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-600" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span class="text-primary-700 font-medium">Cargando columnas...</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Sección 2: Vista previa -->
-            <div id="previewSection" class="hidden mb-8">
-                <div class="bg-white rounded-2xl shadow-2xl p-8">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                        <span class="bg-primary-100 text-primary-600 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">2</span>
-                        Vista previa y selección
-                    </h2>
-                    
-                    <div class="bg-gray-50 rounded-xl p-4 mb-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm text-gray-500">Total de filas</p>
+                
+                <!-- Sección 2: Vista previa y mapeo -->
+                <div id="previewSection" class="hidden mb-8">
+                    <div class="bg-white rounded-2xl shadow-2xl p-8">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                            <span class="bg-primary-100 text-primary-600 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">2</span>
+                            Vista previa y mapeo
+                        </h2>
+                        
+                        <!-- Info -->
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-yellow-700">Selecciona en cada columna qué tipo de dato contiene: Nombre, Importe o Cuenta</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Contadores -->
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="bg-gray-50 rounded-xl p-4 text-center">
+                                <p class="text-sm text-gray-500">Total filas</p>
                                 <p class="text-2xl font-bold text-gray-800" id="totalFilas">-</p>
                             </div>
-                            <div class="text-right">
-                                <p class="text-sm text-gray-500">Vista previa</p>
-                                <p class="text-2xl font-bold text-primary-600" id="filasPreview">-</p>
+                            <div class="bg-red-50 rounded-xl p-4 text-center">
+                                <p class="text-sm text-red-600">A eliminar</p>
+                                <p class="text-2xl font-bold text-red-700" id="countEliminar">0</p>
+                            </div>
+                            <div class="bg-green-50 rounded-xl p-4 text-center">
+                                <p class="text-sm text-green-600">A exportar</p>
+                                <p class="text-2xl font-bold text-green-700" id="countExportar">0</p>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Columnas -->
-                    <div class="mb-6">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-semibold text-gray-700">Seleccionar columnas</h3>
-                            <div class="flex gap-2">
-                                <button type="button" onclick="seleccionarTodasColumnas()" class="text-sm text-primary-600 hover:text-primary-800 font-medium">Todas</button>
-                                <span class="text-gray-300">|</span>
-                                <button type="button" onclick="deseleccionarTodasColumnas()" class="text-sm text-primary-600 hover:text-primary-800 font-medium">Ninguna</button>
+                        
+                        <!-- Campos adicionales -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Columna 3 - Texto fijo <span class="text-gray-400">(máx. 30)</span>
+                                </label>
+                                <input type="text" name="col3_texto" maxlength="30" 
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500" 
+                                       placeholder="Ej: PAG NOM 1RA FEB 26" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Header Columna 3 <span class="text-gray-400">(máx. 30)</span>
+                                </label>
+                                <input type="text" name="col3_header" maxlength="30" 
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500" 
+                                       placeholder="Ej: MOV" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Columna 6 - Fecha <span class="text-gray-400">(DDMMYYYY)</span>
+                                </label>
+                                <input type="text" name="col6_fecha" maxlength="8" pattern="\d{8}" 
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500" 
+                                       placeholder="13022026" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Columna 8 - Texto fijo <span class="text-gray-400">(máx. 30)</span>
+                                </label>
+                                <input type="text" name="col8_texto" maxlength="30" 
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500" 
+                                       placeholder="Ej: FEB" required>
                             </div>
                         </div>
-                        <div class="bg-gray-50 rounded-xl p-4 max-h-40 overflow-y-auto border border-gray-200" id="columnasGrid"></div>
-                    </div>
-                    
-                    <!-- Tabla -->
-                    <div class="mb-6">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-semibold text-gray-700">Datos (selecciona filas a eliminar)</h3>
-                            <button type="button" onclick="eliminarFilasSeleccionadas()" class="text-sm bg-red-100 text-red-600 px-3 py-1 rounded-lg hover:bg-red-200 font-medium">
-                                Eliminar seleccionadas
-                            </button>
-                        </div>
-                        <div class="overflow-x-auto border border-gray-200 rounded-xl max-h-96 overflow-y-auto">
+                        
+                        <!-- Tabla con selects -->
+                        <div class="overflow-x-auto border border-gray-200 rounded-xl max-h-96 overflow-y-auto mb-4">
                             <table class="w-full text-sm">
                                 <thead class="bg-gray-100 sticky top-0">
                                     <tr id="tableHeader"></tr>
@@ -168,305 +195,408 @@
                                 <tbody id="tableBody"></tbody>
                             </table>
                         </div>
-                    </div>
-                    
-                    <!-- Contadores -->
-                    <div class="bg-primary-50 rounded-xl p-4 mb-6">
-                        <div class="grid grid-cols-3 gap-4 text-center">
-                            <div>
-                                <p class="text-sm text-primary-600">Columnas</p>
-                                <p class="text-2xl font-bold text-primary-800" id="countColumnas">0</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-primary-600">A eliminar</p>
-                                <p class="text-2xl font-bold text-red-600" id="countFilas">0</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-primary-600">A exportar</p>
-                                <p class="text-2xl font-bold text-green-600" id="countExportar">0</p>
-                            </div>
+                        
+                        <!-- Botón eliminar seleccionadas -->
+                        <div class="flex justify-end mb-4">
+                            <button type="button" id="btnEliminar" onclick="eliminarFilasSeleccionadas()" 
+                                    class="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-medium flex items-center opacity-50 cursor-not-allowed pointer-events-none">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                Eliminar seleccionadas
+                            </button>
                         </div>
+                        
+                        <button type="submit" class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all-300">
+                            <span class="flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                                </svg>
+                                Generar CSV con formato bancario
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Descarga - MODAL CENTRADO -->
+        {% if csv_download %}
+        <div class="flex items-center justify-center py-8">
+            <div class="max-w-md w-full mx-auto p-8 bg-white rounded-2xl shadow-2xl animate-fade-in border-2 border-green-200">
+                <div class="text-center">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
+                        <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
                     </div>
                     
-                    <button type="submit" class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all-300" id="convertBtn">
-                        <span class="flex items-center justify-center">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">¡Archivo generado!</h2>
+                    <p class="text-gray-600 mb-6">Tu archivo CSV está listo para descargar</p>
+                    
+                    <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                        <p class="text-sm text-gray-500 mb-1">Archivo generado</p>
+                        <p class="text-sm font-mono text-primary-600 break-all bg-white p-2 rounded border border-gray-200">
+                            {{ csv_download }}
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <a href="/descargar/{{ csv_download }}" 
+                           class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all-300 flex items-center justify-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                             </svg>
-                            Convertir a CSV
-                        </span>
-                    </button>
+                            Descargar CSV
+                        </a>
+                        
+                        <a href="/nueva_conversion" 
+                           class="w-full bg-white border-2 border-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl hover:bg-gray-50 transition-all-300 flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            Convertir otro archivo
+                        </a>
+                    </div>
                 </div>
-            </div>
-        </form>
-        
-        <!-- Descarga -->
-        {% if csv_download %}
-        <div id="downloadSection" class="max-w-md mx-auto mb-8 p-6 bg-green-50 rounded-xl border border-green-200 animate-fade-in">
-            <div class="text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-semibold text-green-800 mb-2">¡Conversión exitosa!</h3>
-                <p class="text-green-600 mb-4">Archivo: {{ nombre_original if nombre_original else 'convertido' }}</p>
-                <a href="/descargar/{{ csv_download }}" class="inline-flex items-center justify-center w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-xl hover:bg-green-600 transition-all-300">
-                    Descargar CSV
-                </a>
-                <a href="/nueva_conversion" class="mt-3 inline-block w-full bg-white border border-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl hover:bg-gray-50 transition-all-300">
-                    Convertir otro archivo
-                </a>
             </div>
         </div>
+        
+        <!-- Ocultar el formulario cuando hay descarga -->
+        <style>
+            #formConvertirContainer {
+                display: none;
+            }
+        </style>
         {% endif %}
         
+        <!-- Footer (solo visible cuando no hay descarga) -->
+        {% if not csv_download %}
         <div class="text-center text-white/60 text-sm pb-8">
-            <p>Sistema de conversión Excel a CSV</p>
+            <p>Sistema de conversión Excel a CSV - Formato bancario</p>
         </div>
+        {% endif %}
     </div>
     
-    <!-- JavaScript -->
-    <script>
-        let datosGlobales = [];
-        let columnasGlobales = [];
-        let filasMarcadasEliminar = new Set();
-        let archivoCargado = false;
+<script>
+    let datosGlobales = [];
+    let columnasGlobales = [];
+    let filasEliminar = new Set();
+    let archivoCargado = false;
+    
+    // Mapeo de tipos seleccionados
+    let mapeoSeleccionado = {
+        nombre: null,
+        importe: null,
+        cuenta: null
+    };
+
+    // Elementos del DOM
+    const archivoInput = document.getElementById('archivo');
+    const uploadText = document.getElementById('uploadText');
+    const previewSection = document.getElementById('previewSection');
+    const loader = document.getElementById('loader');
+    const tableHeader = document.getElementById('tableHeader');
+    const tableBody = document.getElementById('tableBody');
+    const btnEliminar = document.getElementById('btnEliminar');
+
+    // Evento: seleccionar archivo
+    archivoInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
         
-        const archivoInput = document.getElementById('archivo');
-        const uploadText = document.getElementById('uploadText');
-        const uploadArea = document.getElementById('uploadArea');
-        const previewSection = document.getElementById('previewSection');
-        const loader = document.getElementById('loader');
-        const columnasGrid = document.getElementById('columnasGrid');
-        const tableHeader = document.getElementById('tableHeader');
-        const tableBody = document.getElementById('tableBody');
-        const convertBtn = document.getElementById('convertBtn');
-        const downloadSection = document.getElementById('downloadSection');
-        const notificationArea = document.getElementById('notification-area');
+        uploadText.textContent = `✓ ${file.name}`;
+        previewSection.classList.add('hidden');
+        loader.classList.remove('hidden');
         
-        // Función para mostrar notificaciones
-        function mostrarNotificacion(mensaje, tipo = 'success') {
-            const notification = document.createElement('div');
-            notification.className = `p-4 rounded-xl ${tipo === 'success' ? 'bg-green-100 border border-green-300 text-green-800' : 'bg-red-100 border border-red-300 text-red-800'} animate-fade-in mb-3`;
-            notification.innerHTML = `
-                <div class="flex items-center">
-                    ${tipo === 'success' ? 
-                        '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' :
-                        '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
-                    }
-                    <span>${mensaje}</span>
-                    <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-gray-500 hover:text-gray-700">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            `;
-            
-            notificationArea.classList.remove('hidden');
-            notificationArea.appendChild(notification);
-            
-            // Auto-eliminar después de 5 segundos
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-            }, 5000);
-        }
+        const formData = new FormData();
+        formData.append('archivo', file);
         
-        // Deshabilitar input de archivo si ya hay uno cargado o si hay descarga
-        if (downloadSection) {
-            archivoInput.disabled = true;
-            uploadArea.classList.add('opacity-50', 'cursor-not-allowed');
-            uploadArea.onclick = null;
-        }
-        
-        archivoInput.addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // Limpiar notificaciones anteriores
-                notificationArea.innerHTML = '';
-                notificationArea.classList.add('hidden');
-                
-                uploadText.textContent = `✓ ${file.name}`;
-                uploadArea.classList.add('border-green-400', 'bg-green-50');
-                previewSection.classList.add('hidden');
-                loader.classList.remove('hidden');
-                
-                const formData = new FormData();
-                formData.append('archivo', file);
-                
-                try {
-                    const response = await fetch('/vista_previa', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        datosGlobales = data.datos;
-                        columnasGlobales = data.columnas;
-                        filasMarcadasEliminar = new Set();
-                        archivoCargado = true;
-                        
-                        // Deshabilitar input de archivo
-                        archivoInput.disabled = true;
-                        uploadArea.classList.add('opacity-50', 'cursor-not-allowed');
-                        uploadArea.onclick = null;
-                        
-                        document.getElementById('totalFilas').textContent = data.total_filas;
-                        document.getElementById('filasPreview').textContent = data.filas_preview;
-                        
-                        renderizarColumnas();
-                        renderizarTabla();
-                        actualizarContadores();
-                        
-                        previewSection.classList.remove('hidden');
-                        
-                        if (data.mensaje) {
-                            mostrarNotificacion(data.mensaje, 'success');
-                        }
-                    } else {
-                        mostrarNotificacion('Error: ' + data.error, 'error');
-                        archivoInput.disabled = false;
-                        uploadArea.classList.remove('opacity-50', 'cursor-not-allowed');
-                        uploadArea.onclick = function() { document.getElementById('archivo').click(); };
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    mostrarNotificacion('Error al procesar el archivo', 'error');
-                    archivoInput.disabled = false;
-                    uploadArea.classList.remove('opacity-50', 'cursor-not-allowed');
-                    uploadArea.onclick = function() { document.getElementById('archivo').click(); };
-                } finally {
-                    loader.classList.add('hidden');
-                }
-            }
-        });
-        
-        function renderizarColumnas() {
-            columnasGrid.innerHTML = columnasGlobales.map(col => `
-                <label class="flex items-center p-2 hover:bg-gray-100 rounded-lg cursor-pointer">
-                    <input type="checkbox" name="columnas" value="${col}" 
-                           class="w-4 h-4 text-primary-600 border-gray-300 rounded columna-checkbox"
-                           checked onchange="actualizarContadores()">
-                    <span class="ml-2 text-sm text-gray-700 truncate" title="${col}">${col}</span>
-                </label>
-            `).join('');
-        }
-        
-        function renderizarTabla() {
-            const columnasSeleccionadas = obtenerColumnasSeleccionadas();
-            
-            tableHeader.innerHTML = `
-                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase w-12 bg-gray-100">Eliminar</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase w-16 bg-gray-100">#</th>
-                ${columnasSeleccionadas.map(col => `
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase bg-gray-100">${col}</th>
-                `).join('')}
-            `;
-            
-            if (datosGlobales.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="100" class="text-center py-8 text-gray-500">No hay datos para mostrar</td></tr>';
-                return;
-            }
-            
-            tableBody.innerHTML = datosGlobales.map((fila, idx) => {
-                const indiceReal = fila.__indice_real__;
-                return `
-                    <tr class="${filasMarcadasEliminar.has(indiceReal) ? 'bg-red-50' : (idx % 2 === 0 ? 'bg-white' : 'bg-gray-50')} hover:bg-gray-100">
-                        <td class="px-4 py-3">
-                            <input type="checkbox" name="filas_eliminar" value="${indiceReal}" 
-                                   class="w-4 h-4 text-red-600 border-gray-300 rounded"
-                                   ${filasMarcadasEliminar.has(indiceReal) ? 'checked' : ''}
-                                   onchange="toggleFila(${indiceReal})">
-                        </td>
-                        <td class="px-4 py-3 text-gray-500 text-xs">${indiceReal + 1}</td>
-                        ${columnasSeleccionadas.map(col => `
-                            <td class="px-4 py-3 text-gray-700 truncate max-w-xs" title="${fila[col] || ''}">${fila[col] || ''}</td>
-                        `).join('')}
-                    </tr>
-                `;
-            }).join('');
-        }
-        
-        function obtenerColumnasSeleccionadas() {
-            const checkboxes = document.querySelectorAll('.columna-checkbox:checked');
-            return Array.from(checkboxes).map(cb => cb.value);
-        }
-        
-        function toggleFila(indiceReal) {
-            if (filasMarcadasEliminar.has(indiceReal)) {
-                filasMarcadasEliminar.delete(indiceReal);
-            } else {
-                filasMarcadasEliminar.add(indiceReal);
-            }
-            renderizarTabla();
-            actualizarContadores();
-        }
-        
-        function seleccionarTodasColumnas() {
-            document.querySelectorAll('.columna-checkbox').forEach(cb => cb.checked = true);
-            renderizarTabla();
-            actualizarContadores();
-        }
-        
-        function deseleccionarTodasColumnas() {
-            document.querySelectorAll('.columna-checkbox').forEach(cb => cb.checked = false);
-            renderizarTabla();
-            actualizarContadores();
-        }
-        
-        function eliminarFilasSeleccionadas() {
-            if (filasMarcadasEliminar.size === 0) {
-                mostrarNotificacion('No hay filas seleccionadas para eliminar', 'error');
-                return;
-            }
-            
-            if (confirm(`¿Eliminar ${filasMarcadasEliminar.size} filas seleccionadas?`)) {
-                // Filtrar los datos globales
-                datosGlobales = datosGlobales.filter(fila => !filasMarcadasEliminar.has(fila.__indice_real__));
-                filasMarcadasEliminar = new Set();
-                renderizarTabla();
-                actualizarContadores();
-                mostrarNotificacion(`Se eliminaron ${filasMarcadasEliminar.size} filas`, 'success');
-            }
-        }
-        
-        function actualizarContadores() {
-            const columnasCount = obtenerColumnasSeleccionadas().length;
-            const filasCount = filasMarcadasEliminar.size;
-            const exportarCount = datosGlobales.length - filasCount;
-            
-            document.getElementById('countColumnas').textContent = columnasCount;
-            document.getElementById('countFilas').textContent = filasCount;
-            document.getElementById('countExportar').textContent = exportarCount;
-        }
-        
-        // Actualizar tabla cuando cambian las columnas
-        document.addEventListener('change', function(e) {
-            if (e.target.classList.contains('columna-checkbox')) {
-                renderizarTabla();
-                actualizarContadores();
-            }
-        });
-        
-        // Prevenir envío del formulario si no hay archivo cargado
-        document.getElementById('convertForm').addEventListener('submit', function(e) {
-            if (!archivoCargado) {
-                e.preventDefault();
-                mostrarNotificacion('Primero debes cargar un archivo Excel', 'error');
-            }
-        });
-        
-        // Cerrar notificaciones automáticamente después de 5 segundos
-        setTimeout(() => {
-            document.querySelectorAll('.flash-message').forEach(msg => {
-                msg.remove();
+        try {
+            const response = await fetch('/vista_previa', {
+                method: 'POST',
+                body: formData
             });
-        }, 5000);
-    </script>
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                datosGlobales = data.datos;
+                columnasGlobales = data.columnas;
+                filasEliminar = new Set();
+                archivoCargado = true;
+                
+                // Resetear mapeo
+                mapeoSeleccionado = {
+                    nombre: null,
+                    importe: null,
+                    cuenta: null
+                };
+                
+                document.getElementById('totalFilas').textContent = data.total_filas;
+                
+                renderizarTabla();
+                actualizarContadores();
+                previewSection.classList.remove('hidden');
+            } else {
+                alert('Error: ' + data.error);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error al procesar el archivo');
+        } finally {
+            loader.classList.add('hidden');
+        }
+    });
+
+    // Renderizar tabla con selects de mapeo
+    function renderizarTabla() {
+        // Header con selects para cada columna
+        let headerHTML = `
+            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase bg-gray-100 w-12">✕</th>
+            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase bg-gray-100 w-16">#</th>
+        `;
+        
+        columnasGlobales.forEach((col, index) => {
+            // Determinar si esta columna ya está seleccionada para algún tipo
+            const esNombre = mapeoSeleccionado.nombre === col;
+            const esImporte = mapeoSeleccionado.importe === col;
+            const esCuenta = mapeoSeleccionado.cuenta === col;
+            
+            // Determinar qué opción debe estar seleccionada
+            let selectedNombre = esNombre ? 'selected' : '';
+            let selectedImporte = esImporte ? 'selected' : '';
+            let selectedCuenta = esCuenta ? 'selected' : '';
+            
+            headerHTML += `
+                <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase bg-gray-100 min-w-40">
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-500 mb-1 truncate" title="${col}">${col}</span>
+                        <select name="mapeo_${index}" 
+                                onchange="seleccionarMapeo(this, '${index}', '${col}')"
+                                class="w-full text-xs border rounded px-2 py-1 bg-white cursor-pointer hover:border-primary-500">
+                            <option value="">Seleccionar tipo</option>
+                            <option value="nombre" ${selectedNombre}>🏷️ Nombre</option>
+                            <option value="importe" ${selectedImporte}>💰 Importe</option>
+                            <option value="cuenta" ${selectedCuenta}>🏦 Cuenta</option>
+                        </select>
+                    </div>
+                </th>
+            `;
+        });
+        
+        tableHeader.innerHTML = headerHTML;
+        
+        // Body con datos
+        if (datosGlobales.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="100" class="text-center py-8 text-gray-500">No hay datos para mostrar</td></tr>';
+            return;
+        }
+        
+        let bodyHTML = '';
+        datosGlobales.forEach((fila, idx) => {
+            const indiceReal = fila.__indice_real__;
+            bodyHTML += `
+                <tr class="${filasEliminar.has(indiceReal) ? 'bg-red-50' : (idx % 2 === 0 ? 'bg-white' : 'bg-gray-50')} hover:bg-gray-100">
+                    <td class="px-3 py-2">
+                        <input type="checkbox" name="filas_eliminar" value="${indiceReal}" 
+                               class="w-4 h-4 text-red-600 border-gray-300 rounded cursor-pointer"
+                               ${filasEliminar.has(indiceReal) ? 'checked' : ''}
+                               onchange="toggleFila(${indiceReal})">
+                    </td>
+                    <td class="px-3 py-2 text-gray-500 text-xs">${indiceReal + 1}</td>
+            `;
+            
+            columnasGlobales.forEach(col => {
+                bodyHTML += `
+                    <td class="px-3 py-2 text-gray-700 truncate max-w-40" title="${fila[col] || ''}">
+                        ${fila[col] || ''}
+                    </td>
+                `;
+            });
+            
+            bodyHTML += `</tr>`;
+        });
+        
+        tableBody.innerHTML = bodyHTML;
+        
+        // Actualizar visibilidad del botón eliminar
+        actualizarVisibilidadBotonEliminar();
+    }
+
+    // Función para seleccionar mapeo (ahora permite cambios)
+    function seleccionarMapeo(select, index, columna) {
+        const nuevoTipo = select.value;
+        
+        if (!nuevoTipo) return;
+        
+        // Si ya hay una columna asignada para este tipo y es diferente a la actual
+        if (mapeoSeleccionado[nuevoTipo] && mapeoSeleccionado[nuevoTipo] !== columna) {
+            // Preguntar si quiere reasignar
+            if (!confirm(`¿Reasignar "${nuevoTipo}" de "${mapeoSeleccionado[nuevoTipo]}" a "${columna}"?`)) {
+                // Si no quiere reasignar, restaurar el valor anterior
+                select.value = '';
+                return;
+            }
+            
+            // Limpiar la asignación anterior de este tipo
+            const columnaAnterior = mapeoSeleccionado[nuevoTipo];
+            mapeoSeleccionado[nuevoTipo] = null;
+            
+            // Limpiar también cualquier otro tipo que tuviera esta columna
+            for (let tipo in mapeoSeleccionado) {
+                if (mapeoSeleccionado[tipo] === columna) {
+                    mapeoSeleccionado[tipo] = null;
+                }
+            }
+        }
+        
+        // Limpiar cualquier otro tipo que tuviera esta columna
+        for (let tipo in mapeoSeleccionado) {
+            if (mapeoSeleccionado[tipo] === columna) {
+                mapeoSeleccionado[tipo] = null;
+            }
+        }
+        
+        // Asignar el nuevo tipo a esta columna
+        mapeoSeleccionado[nuevoTipo] = columna;
+        
+        // Actualizar inputs hidden
+        actualizarTodosInputsHidden();
+        
+        // Recargar tabla para actualizar selects
+        renderizarTabla();
+    }
+
+    // Función para actualizar todos los inputs hidden
+    function actualizarTodosInputsHidden() {
+        // Crear o actualizar input para nombre
+        if (mapeoSeleccionado.nombre) {
+            let inputNombre = document.querySelector('input[name="nombre_columna"]');
+            if (!inputNombre) {
+                inputNombre = document.createElement('input');
+                inputNombre.type = 'hidden';
+                inputNombre.name = 'nombre_columna';
+                document.getElementById('formConvertir').appendChild(inputNombre);
+            }
+            inputNombre.value = mapeoSeleccionado.nombre;
+        }
+        
+        // Crear o actualizar input para importe
+        if (mapeoSeleccionado.importe) {
+            let inputImporte = document.querySelector('input[name="importe_columna"]');
+            if (!inputImporte) {
+                inputImporte = document.createElement('input');
+                inputImporte.type = 'hidden';
+                inputImporte.name = 'importe_columna';
+                document.getElementById('formConvertir').appendChild(inputImporte);
+            }
+            inputImporte.value = mapeoSeleccionado.importe;
+        }
+        
+        // Crear o actualizar input para cuenta
+        if (mapeoSeleccionado.cuenta) {
+            let inputCuenta = document.querySelector('input[name="cuenta_columna"]');
+            if (!inputCuenta) {
+                inputCuenta = document.createElement('input');
+                inputCuenta.type = 'hidden';
+                inputCuenta.name = 'cuenta_columna';
+                document.getElementById('formConvertir').appendChild(inputCuenta);
+            }
+            inputCuenta.value = mapeoSeleccionado.cuenta;
+        }
+    }
+
+    // Toggle fila para eliminar
+    function toggleFila(indiceReal) {
+        if (filasEliminar.has(indiceReal)) {
+            filasEliminar.delete(indiceReal);
+        } else {
+            filasEliminar.add(indiceReal);
+        }
+        actualizarContadores();
+        actualizarVisibilidadBotonEliminar();
+    }
+
+    // Eliminar filas seleccionadas (CORREGIDO)
+    function eliminarFilasSeleccionadas() {
+    if (filasEliminar.size === 0) {
+        alert('No hay filas seleccionadas para eliminar');
+        return;
+    }
+    
+    if (confirm(`¿Eliminar ${filasEliminar.size} filas seleccionadas?`)) {
+        // Los índices que se mandan al servidor son los que están en filasEliminar
+        // Estos índices corresponden al DataFrame original, así que están correctos
+        // Solo necesitamos limpiar la vista local
+        datosGlobales = datosGlobales.filter(fila => !filasEliminar.has(fila.__indice_real__));
+        filasEliminar = new Set();  // ← Esto es clave
+        renderizarTabla();
+        actualizarContadores();
+    }
+}
+
+    // Actualizar contadores
+    function actualizarContadores() {
+        document.getElementById('countEliminar').textContent = filasEliminar.size;
+        document.getElementById('countExportar').textContent = datosGlobales.length - filasEliminar.size;
+    }
+
+    // Actualizar visibilidad del botón eliminar
+    function actualizarVisibilidadBotonEliminar() {
+        const btnEliminar = document.getElementById('btnEliminar');
+        if (btnEliminar) {
+            if (filasEliminar.size === 0) {
+                btnEliminar.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+                btnEliminar.classList.remove('hover:bg-red-200');
+            } else {
+                btnEliminar.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+                btnEliminar.classList.add('hover:bg-red-200');
+            }
+        }
+    }
+
+    // Validar formulario antes de enviar
+    document.getElementById('formConvertir').addEventListener('submit', function(e) {
+        if (!archivoCargado) {
+            e.preventDefault();
+            alert('Primero carga un archivo Excel');
+            return;
+        }
+        
+        // NUEVA VALIDACIÓN: No permitir enviar si hay filas seleccionadas para eliminar
+        if (filasEliminar.size > 0) {
+            e.preventDefault();
+            alert('Hay filas seleccionadas para eliminar. Debes eliminarlas o deseleccionarlas antes de continuar.');
+            return;
+        }
+        
+        // Verificar que se seleccionaron las 3 columnas
+        if (!mapeoSeleccionado.nombre || !mapeoSeleccionado.importe || !mapeoSeleccionado.cuenta) {
+            e.preventDefault();
+            alert('Selecciona las columnas: Nombre, Importe y Cuenta');
+            return;
+        }
+        
+        // Verificar campos adicionales
+        const col3Texto = document.querySelector('[name="col3_texto"]').value;
+        const col3Header = document.querySelector('[name="col3_header"]').value;
+        const col6Fecha = document.querySelector('[name="col6_fecha"]').value;
+        const col8Texto = document.querySelector('[name="col8_texto"]').value;
+        
+        if (!col3Texto || !col3Header || !col6Fecha || !col8Texto) {
+            e.preventDefault();
+            alert('Llena todos los campos adicionales');
+            return;
+        }
+        
+        // Validar fecha (8 dígitos)
+        if (!/^\d{8}$/.test(col6Fecha)) {
+            e.preventDefault();
+            alert('La fecha debe tener 8 dígitos (DDMMYYYY)');
+            return;
+        }
+    });
+</script>
 </body>
 </html>
