@@ -1,4 +1,3 @@
-# src/utils/limpieza.py
 import re
 import unicodedata
 import pandas as pd
@@ -13,26 +12,20 @@ def eliminar_acentos(texto):
                                  if unicodedata.category(char) != 'Mn')
     return texto_sin_acentos
 
-
 def reemplazar_caracteres_especiales(texto):
     """Reemplaza caracteres especiales por sus equivalentes"""
     if not isinstance(texto, str):
         return texto
     replacements = {
-        'ñ': 'n', 'Ñ': 'N',
-        'ü': 'u', 'Ü': 'U',
-        'ö': 'o', 'Ö': 'O',
-        'ä': 'a', 'Ä': 'A',
-        'ë': 'e', 'Ë': 'E',
-        'ï': 'i', 'Ï': 'I',
-        '¡': '', '¿': '',
-        '°': '', 'º': '', 'ª': '',
+        'ñ': 'n', 'Ñ': 'N', 'ü': 'u', 'Ü': 'U',
+        'ö': 'o', 'Ö': 'O', 'ä': 'a', 'Ä': 'A',
+        'ë': 'e', 'Ë': 'E', 'ï': 'i', 'Ï': 'I',
+        '¡': '', '¿': '', '°': '', 'º': '', 'ª': '',
     }
     resultado = texto
     for char, replacement in replacements.items():
         resultado = resultado.replace(char, replacement)
     return resultado
-
 
 def limpiar_espacios(texto):
     """Limpia espacios extras en un texto"""
@@ -41,7 +34,6 @@ def limpiar_espacios(texto):
     texto = texto.strip()
     texto = re.sub(r'\s+', ' ', texto)
     return texto
-
 
 def limpiar_celda(texto):
     """Limpia una celda aplicando todas las transformaciones"""
@@ -53,14 +45,12 @@ def limpiar_celda(texto):
     texto = limpiar_espacios(texto)
     return texto
 
-
 def limpiar_dataframe(df):
     """Aplica limpieza a todas las celdas de un DataFrame"""
     df_limpio = df.copy()
     for columna in df_limpio.columns:
         df_limpio[columna] = df_limpio[columna].apply(limpiar_celda)
     return df_limpio
-
 
 def convertir_valor_json(valor):
     """Convierte valores a tipos válidos para JSON"""
@@ -71,7 +61,6 @@ def convertir_valor_json(valor):
             return ''
         return valor
     return str(valor)
-
 
 def limpiar_nombre_columna(columna):
     """Limpia un nombre de columna"""

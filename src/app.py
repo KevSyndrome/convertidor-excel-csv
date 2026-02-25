@@ -1,16 +1,17 @@
 from flask import Flask, render_template, request, send_file, flash, redirect, url_for, session
 import os
-import shutil
 import pandas as pd
 
-from src.utils import (
+from src.core import (
     procesar_excel,
-    obtener_vista_previa,
+    obtener_vista_previa
+)
+from src.core.file_manager import (
     guardar_archivo,
     guardar_dataframe_como_csv,
-    limpiar_archivos_temporales,
-    generar_csv_bancario
+    limpiar_archivos_temporales
 )
+from src.factories import FormatFactory
 
 app = Flask(__name__)
 
@@ -94,6 +95,11 @@ def convertir():
             session.clear()
             return redirect(url_for('index'))
         
+        # ============================================
+        # OBTENER BANCO SELECCIONADO (por defecto HSBC)
+        # ============================================
+        banco = request.form.get('banco', 'hsbc')  # 'hsbc' es el valor por defecto
+        
         mapeo = {
             'campo_nombre': request.form.get('nombre_columna'),
             'campo_importe_neto': request.form.get('importe_columna'),
@@ -122,14 +128,34 @@ def convertir():
             flash('La fecha debe tener 8 dígitos (DDMMYYYY)', 'error')
             return redirect(url_for('index'))
         
+        # ============================================
+        # PROCESAR ARCHIVO Y GENERAR CSV USANDO LA FÁBRICA
+        # ============================================
         df, _, _ = procesar_excel(filepath)
-        df_final, total = generar_csv_bancario(df, mapeo, adicionales, filas_eliminar)
+        
+        formato = FormatFactory.crear_formato(
+            banco=banco,
+            mapeo=mapeo,
+            inputs_adicionales=adicionales,
+            filas_eliminar=filas_eliminar
+        )
+        
+        df_final, total = formato.generar_csv(df)
+        
         nombre_csv, output_path = guardar_dataframe_como_csv(df_final, OUTPUT_FOLDER)
         
+        # Limpiar archivo temporal
         limpiar_archivos_temporales(filepath)
         session.clear()
         
-        flash(f'{len(df_final)-1} registros', 'success')
+        nombre_banco = {
+            'hsbc': 'HSBC',
+            'banorte': 'Banorte',
+            'bbva': 'BBVA',
+            'santander': 'Santander'
+        }.get(banco, banco.upper())
+        
+        flash(f'{len(df_final)-1} registros | Formato: {nombre_banco}', 'success')
         return render_template('index.html', csv_download=nombre_csv)
     
     except Exception as e:

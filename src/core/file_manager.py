@@ -1,4 +1,3 @@
-# src/utils/file_manager.py
 import os
 import uuid
 from datetime import datetime
