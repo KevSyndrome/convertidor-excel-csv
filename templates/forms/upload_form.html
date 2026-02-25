@@ -20,6 +20,34 @@
             </div>
         </div>
         
+        <!-- Dropdown de Bancos (placeholder visual, sin funcionalidad por ahora) -->
+        <div class="mt-6 pt-4 border-t border-[#D6D1CA]">
+            <label class="block text-sm font-medium text-[#2C2927] mb-2">
+                Banco <span class="text-[#8B837C]">(formato)</span>
+            </label>
+            <div class="relative">
+                <select name="banco" id="banco-select" 
+                        class="w-full px-4 py-2.5 bg-white border border-[#D6D1CA] rounded-lg text-sm focus:ring-2 focus:ring-[#99825d] focus:border-[#99825d] appearance-none cursor-pointer">
+                    <option value="" disabled selected>Selecciona un banco</option>
+                    <!-- <option value="banorte">Banorte (formato estándar)</option>
+                    <option value="bbva">BBVA</option>
+                    <option value="santander">Santander</option> -->
+                    <option value="hsbc">HSBC</option>
+                    <!-- <option value="azteca">Banco Azteca</option> -->
+                    <!-- <option value="inbursa">Inbursa</option>
+                    <option value="scotiabank">Scotiabank</option>
+                    <option value="banjercito">Banjército</option>
+                    <option value="bajio">Banco del Bajío</option> -->
+                </select>
+                <!-- Icono de flecha personalizado -->
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg class="w-4 h-4 text-[#8B837C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+        
         <div id="loader" class="hidden text-center py-6">
             <div class="inline-flex items-center px-4 py-2 bg-[#99825d]/10 rounded-lg">
                 <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-[#99825d]" fill="none" viewBox="0 0 24 24">
