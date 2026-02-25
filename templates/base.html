@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Conversor Excel a CSV - Formato Bancario{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f2f0ed', 100: '#e5e0db', 200: '#ccc2b7', 
+                            300: '#b2a393', 400: '#99856f', 500: '#99825d',
+                            600: '#7a684a', 700: '#5c4e38', 800: '#3d3325', 900: '#1f1913',
+                        },
+                        secondary: {
+                            221: '#9c1751',
+                            222: '#8b0438',
+                        },
+                        ejes: {
+                            infraestructura: '#6E1B43',
+                            economia: '#CA104B',
+                            social: '#015E4F',
+                            seguridad: '#8B837C',
+                        },
+                        gray: {
+                            50: '#F5F6F4',
+                            100: '#e9eae7',
+                            200: '#d6d1ca',
+                            300: '#b8b2a9',
+                            400: '#9a9287',
+                            500: '#7c7366',
+                            600: '#635b50',
+                            700: '#4a443a',
+                            800: '#312d26',
+                            900: '#2C2927',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        .transition-all-300 { transition: all 0.3s ease; }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #015E4F 0%, #014235 100%);
+        }
+        .btn-success:hover {
+            background: linear-gradient(135deg, #014235 0%, #003129 100%);
+        }
+        .btn-delete {
+            background-color: #8b0438;
+        }
+        .btn-delete:hover {
+            background-color: #6e032d;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-[#F5F6F4] min-h-screen p-4">
+    <div class="max-w-7xl mx-auto">
+        {% include 'components/header.html' %}
+        
+        {% include 'components/alerts.html' %}
+        
+        {% block content %}{% endblock %}
+        
+        {% include 'components/footer.html' %}
+    </div>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

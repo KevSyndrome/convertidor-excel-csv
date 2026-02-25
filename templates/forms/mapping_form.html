@@ -1,0 +1,49 @@
+<!-- Campos adicionales -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <!-- Concepto genérico -->
+    <div>
+        <label class="block text-sm font-medium text-[#2C2927] mb-1">
+            Concepto genérico <span class="text-[#8B837C]">(máx. 30)</span>
+        </label>
+        <input type="text" 
+            name="col3_texto" 
+            id="col3_texto"
+            maxlength="30" 
+            class="w-full px-4 py-2 border border-[#D6D1CA] rounded-lg focus:ring-[#99825d] focus:border-[#99825d] uppercase" 
+            placeholder="Ej: PAG NOM 1RA FEB 26" 
+            required
+            oninput="this.value = this.value.toUpperCase()">
+    </div>
+    
+    <!-- Cuenta emisora -->
+    <div>
+        <label class="block text-sm font-medium text-[#2C2927] mb-1">
+            Cuenta emisora <span class="text-[#8B837C]">(máx. 30)</span>
+        </label>
+        <input type="text" name="col3_header" maxlength="30" 
+               class="w-full px-4 py-2 border border-[#D6D1CA] rounded-lg focus:ring-[#99825d] focus:border-[#99825d]" 
+               placeholder="4067671644" required>
+    </div>
+    
+    <!-- Fecha (componente reutilizable) -->
+    {% include 'forms/datepicker.html' with {
+        label: 'Fecha',
+        input_id: 'fecha',
+        input_name: 'col6_fecha'
+    } %}
+    
+    <!-- Concepto nómina -->
+    <div>
+        <label class="block text-sm font-medium text-[#2C2927] mb-1">
+            Concepto nómina <span class="text-[#8B837C]">(máx. 30)</span>
+        </label>
+        <input type="text" 
+            name="col8_texto" 
+            id="col8_texto"
+            maxlength="30" 
+            class="w-full px-4 py-2 border border-[#D6D1CA] rounded-lg focus:ring-[#99825d] focus:border-[#99825d] uppercase" 
+            placeholder="Ej: FEB" 
+            required
+            oninput="this.value = this.value.toUpperCase()">
+    </div>
+</div>

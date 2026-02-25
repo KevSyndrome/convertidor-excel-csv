@@ -3,7 +3,7 @@ import os
 import shutil
 import pandas as pd
 
-from utils import (
+from src.utils import (
     procesar_excel,
     obtener_vista_previa,
     guardar_archivo,
@@ -13,12 +13,16 @@ from utils import (
 )
 
 app = Flask(__name__)
-app.secret_key = 'tu_clave_secreta_aqui_cambiala_por_una_segura'
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+app.template_folder = os.path.join(PROJECT_ROOT, 'templates')
+
+app.secret_key = os.environ.get('SECRET_KEY', 'clave-flask-app')
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(APP_DIR, 'uploads')
-OUTPUT_FOLDER = os.path.join(APP_DIR, 'outputs')
 
+UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', os.path.join(APP_DIR, 'uploads'))
+OUTPUT_FOLDER = os.environ.get('OUTPUT_FOLDER', os.path.join(APP_DIR, 'outputs'))
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 

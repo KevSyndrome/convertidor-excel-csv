@@ -1,0 +1,166 @@
+<div class="relative" id="{{ input_id }}-container">
+    <label class="block text-sm font-medium text-gray-900 mb-1">
+        {{ label|default('Fecha') }} 
+        <span class="text-gray-400">(DDMMYYYY)</span>
+    </label>
+
+    <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center ps-3 pointer-events-none">
+            <!-- Icono de calendario en SVG -->
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+        </div>
+
+        <input type="text"
+            id="{{ input_id }}-visible"
+            class="w-full ps-9 pe-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 cursor-pointer select-none"
+            placeholder="DD/MM/YYYY"
+            readonly>
+
+        <input type="hidden" name="{{ input_name }}" id="{{ input_id }}-hidden">
+    </div>
+
+    <!-- Calendar -->
+    <div id="{{ input_id }}-calendar"
+        class="absolute z-50 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl p-4 hidden animate-fade-in">
+        
+        <div class="flex justify-between items-center mb-3">
+            <button type="button" id="{{ input_id }}-prev" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-primary-500 hover:bg-primary-50 rounded-full transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <span id="{{ input_id }}-month" class="text-sm font-semibold text-gray-900"></span>
+            <button type="button" id="{{ input_id }}-next" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-primary-500 hover:bg-primary-50 rounded-full transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-7 text-xs text-gray-400 mb-2 text-center">
+            <div>Do</div><div>Lu</div><div>Ma</div><div>Mi</div>
+            <div>Ju</div><div>Vi</div><div>Sá</div>
+        </div>
+
+        <div id="{{ input_id }}-days" class="grid grid-cols-7 gap-1 text-sm"></div>
+    </div>
+
+    <p class="mt-1 text-xs text-gray-400" id="{{ input_id }}-preview"></p>
+</div>
+
+<script>
+(function() {
+    function initDatepicker(id) {
+        const container = document.getElementById(`${id}-container`);
+        const input = document.getElementById(`${id}-visible`);
+        const hidden = document.getElementById(`${id}-hidden`);
+        const calendar = document.getElementById(`${id}-calendar`);
+        const daysContainer = document.getElementById(`${id}-days`);
+        const monthLabel = document.getElementById(`${id}-month`);
+        const prevBtn = document.getElementById(`${id}-prev`);
+        const nextBtn = document.getElementById(`${id}-next`);
+        const preview = document.getElementById(`${id}-preview`);
+
+        if (!container) return;
+
+        let currentDate = new Date();
+        let selectedDate = null;
+
+        const months = [
+            "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        ];
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            monthLabel.textContent = `${months[month]} ${year}`;
+            daysContainer.innerHTML = "";
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDiv = document.createElement("div");
+                daysContainer.appendChild(emptyDiv);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.textContent = day;
+                btn.className = "p-2 rounded-lg hover:bg-primary-100 hover:text-primary-700 transition text-center";
+
+                // Resaltar día actual
+                const today = new Date();
+                if (day === today.getDate() && 
+                    month === today.getMonth() && 
+                    year === today.getFullYear()) {
+                    btn.className += " bg-primary-50 text-primary-600 font-medium";
+                }
+
+                btn.addEventListener("click", () => {
+                    selectedDate = new Date(year, month, day);
+                    setDate(selectedDate);
+                    calendar.classList.add("hidden");
+                });
+
+                daysContainer.appendChild(btn);
+            }
+        }
+
+        function setDate(date) {
+            const yyyy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, "0");
+            const dd = String(date.getDate()).padStart(2, "0");
+
+            input.value = `${dd}/${mm}/${yyyy}`;
+            hidden.value = `${dd}${mm}${yyyy}`;
+
+            if (preview) {
+                preview.textContent = `Se enviará como: ${hidden.value}`;
+            }
+        }
+
+        // Establecer fecha actual por defecto
+        const today = new Date();
+        setDate(today);
+
+        input.addEventListener("click", (e) => {
+            e.stopPropagation();
+            calendar.classList.toggle("hidden");
+            renderCalendar(); // Actualizar calendario al abrir
+        });
+
+        prevBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        nextBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!container.contains(e.target)) {
+                calendar.classList.add("hidden");
+            }
+        });
+
+        renderCalendar();
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => initDatepicker("{{ input_id }}"));
+    } else {
+        initDatepicker("{{ input_id }}");
+    }
+})();
+</script>

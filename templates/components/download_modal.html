@@ -1,0 +1,46 @@
+<!-- Descarga - MODAL CENTRADO -->
+<div class="flex items-center justify-center py-8">
+    <div class="max-w-md w-full mx-auto p-8 bg-white rounded-2xl shadow-2xl animate-fade-in border-2 border-[#015E4F]">
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-[#015E4F]/10 rounded-full mb-6">
+                <svg class="w-10 h-10 text-[#015E4F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            
+            <h2 class="text-2xl font-bold text-[#2C2927] mb-2">¡Archivo generado!</h2>
+            <p class="text-[#8B837C] mb-6">Tu archivo CSV está listo para descargar</p>
+            
+            <div class="bg-[#F5F6F4] rounded-xl p-4 mb-6 border border-[#D6D1CA]">
+                <p class="text-sm text-[#8B837C] mb-1">Archivo generado</p>
+                <p class="text-sm font-mono text-[#99825d] break-all bg-white p-2 rounded border border-[#D6D1CA]">
+                    {{ csv_download }}
+                </p>
+            </div>
+            
+            <div class="space-y-3">
+                <a href="/descargar/{{ csv_download }}" 
+                   class="w-full btn-success text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all-300 flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Descargar CSV
+                </a>
+                
+                <a href="/nueva_conversion" 
+                   class="w-full bg-white border-2 border-[#D6D1CA] text-[#2C2927] font-semibold py-3 px-6 rounded-xl hover:bg-[#F5F6F4] transition-all-300 flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Convertir otro archivo
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #formConvertirContainer {
+        display: none;
+    }
+</style>
